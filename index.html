@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Jogo do Impostor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #0f172a;
+      color: #e5e7eb;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #0f172a;
+      color: #e5e7eb;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      margin: 1rem;
+      padding: 1.5rem;
+      border-radius: 1.25rem;
+      background: radial-gradient(circle at top, #1f2937, #020617);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      margin-top: 0.35rem;
+      margin-bottom: 0.35rem;
+      font-size: 0.92rem;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    label {
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      border-radius: 0.75rem;
+      border: 1px solid #4b5563;
+      padding: 0.7rem 0.9rem;
+      background-color: #020617;
+      color: #e5e7eb;
+      font-size: 0.95rem;
+      box-sizing: border-box;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 1px #38bdf8;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      border-radius: 999px;
+      border: none;
+      padding: 0.55rem 1.1rem;
+      margin-top: 0.75rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, opacity 0.1s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #022c22;
+      box-shadow: 0 6px 14px rgba(34, 197, 94, 0.45);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: 0 3px 8px rgba(34, 197, 94, 0.35);
+    }
+
+    .btn-secondary {
+      background: #111827;
+      color: #e5e7eb;
+      border: 1px solid #4b5563;
+    }
+
+    .btn-secondary:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: 0 3px 8px rgba(15, 23, 42, 0.7);
+    }
+
+    .btn-small {
+      padding: 0.3rem 0.8rem;
+      font-size: 0.8rem;
+      margin-top: 0;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .info-box {
+      margin-top: 0.75rem;
+      padding: 0.7rem 0.9rem;
+      border-radius: 0.9rem;
+      background-color: rgba(15, 23, 42, 0.9);
+      border: 1px dashed rgba(148, 163, 184, 0.6);
+      font-size: 0.83rem;
+      color: #9ca3af;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(37, 99, 235, 0.15);
+      color: #bfdbfe;
+      border: 1px solid rgba(59, 130, 246, 0.7);
+      margin-bottom: 0.4rem;
+    }
+
+    .error {
+      color: #fecaca;
+      background: rgba(153, 27, 27, 0.25);
+      border: 1px solid rgba(248, 113, 113, 0.6);
+      padding: 0.55rem 0.75rem;
+      border-radius: 0.7rem;
+      font-size: 0.82rem;
+      margin-top: 0.5rem;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .player-highlight {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .big-text {
+      font-size: 1.1rem;
+      margin-top: 0.35rem;
+    }
+
+    .impostor {
+      color: #fecaca;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .impostor-strong {
+      color: #f97373;
+      font-weight: 800;
+      text-shadow: 0 0 8px rgba(248, 113, 113, 0.5);
+    }
+
+    .secret {
+      color: #bbf7d0;
+      font-weight: 600;
+    }
+
+    .footer-text {
+      margin-top: 1rem;
+      font-size: 0.75rem;
+      text-align: center;
+      color: #6b7280;
+    }
+
+    /* LIGHT THEME OVERRIDES */
+    body.light-theme {
+      background-color: #f3f4f6;
+      color: #111827;
+    }
+
+    body.light-theme .container {
+      background: #ffffff;
+      box-shadow: 0 18px 35px rgba(15, 23, 42, 0.15);
+      border-color: #e5e7eb;
+    }
+
+    body.light-theme textarea {
+      background-color: #ffffff;
+      color: #111827;
+      border-color: #d1d5db;
+    }
+
+    body.light-theme .info-box {
+      background-color: #f9fafb;
+      border-color: #d1d5db;
+      color: #4b5563;
+    }
+
+    body.light-theme .badge {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-color: #bfdbfe;
+    }
+
+    body.light-theme .btn-secondary {
+      background: #e5e7eb;
+      color: #111827;
+      border-color: #d1d5db;
+    }
+
+    body.light-theme .footer-text {
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-row">
+      <h1>Jogo do Impostor</h1>
+      <button id="theme-toggle" class="btn btn-secondary btn-small">Modo claro</button>
+    </div>
+    <div class="center">
+      <span class="badge">modo local · 1 celular</span>
+    </div>
+
+    <!-- TELA INICIAL / CONFIGURAÇÃO -->
+    <div id="setup-screen">
+      <h2>Novo jogo</h2>
+      <p>Adicione os jogadores (mínimo 3 e máximo 8).</p>
+
+      <label for="player-names">Nomes (um por linha):</label>
+      <textarea id="player-names" placeholder="Exemplo:
+Ana
+Bruno
+Carlos
+Duda"></textarea>
+
+      <div id="error-msg" class="error hidden"></div>
+
+      <button id="start-btn" class="btn btn-primary">Iniciar jogo</button>
+
+      <div class="info-box">
+        <strong>Como funciona:</strong>
+        <ul style="padding-left: 1.2rem; margin: 0.3rem 0 0; font-size: 0.8rem;">
+          <li>Um dos jogadores será escolhido aleatoriamente como <strong>Impostor</strong>.</li>
+          <li>Os outros verão a <strong>mesma palavra secreta</strong>.</li>
+          <li>Passem o celular de mão em mão e clique em <strong>ABRIR</strong> para cada jogador.</li>
+          <li>No fim, sigam para as rodadas de dicas e votação na roda.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- TELA DO JOGADOR -->
+    <div id="player-screen" class="hidden">
+      <div class="center">
+        <p class="player-highlight" id="player-name-label"></p>
+        <p id="player-instruction">A PALAVRA SECRETA É...</p>
+      </div>
+
+      <div id="reveal-area" class="center">
+        <button id="open-btn" class="btn btn-primary">ABRIR</button>
+      </div>
+
+      <div id="secret-area" class="hidden center">
+        <p class="big-text" id="secret-text"></p>
+        <button id="next-btn" class="btn btn-secondary">PRÓXIMO JOGADOR</button>
+      </div>
+    </div>
+
+    <!-- TELA FINAL -->
+    <div id="end-screen" class="hidden center">
+      <h2>Pronto!</h2>
+      <p class="big-text">Todos já viram suas informações. 🕵️‍♀️🕵️‍♂️</p>
+      <p>Agora joguem em roda: façam <strong>4 rodadas de dicas</strong> sobre a palavra secreta e depois votem em quem é o Impostor.</p>
+      <button id="back-to-start-btn" class="btn btn-primary">Voltar para novo jogo</button>
+    </div>
+
+    <p class="footer-text">
+      Dica: você pode repetir os mesmos nomes para jogar várias rodadas seguidas.
+    </p>
+  </div>
+
+  <script>
+    // -----------------------------
+    // ESTADO DO JOGO
+    // -----------------------------
+    let players = [];
+    let currentPlayerIndex = 0;
+    let impostorIndex = null;
+    let secretWord = null;
+    let wordList = [];
+
+    const setupScreen = document.getElementById("setup-screen");
+    const playerScreen = document.getElementById("player-screen");
+    const endScreen = document.getElementById("end-screen");
+
+    const playerNamesTextarea = document.getElementById("player-names");
+    const errorMsg = document.getElementById("error-msg");
+    const startBtn = document.getElementById("start-btn");
+
+    const playerNameLabel = document.getElementById("player-name-label");
+    const playerInstruction = document.getElementById("player-instruction");
+    const openBtn = document.getElementById("open-btn");
+    const secretArea = document.getElementById("secret-area");
+    const secretText = document.getElementById("secret-text");
+    const nextBtn = document.getElementById("next-btn");
+
+    const themeToggleBtn = document.getElementById("theme-toggle");
+    const backToStartBtn = document.getElementById("back-to-start-btn");
+
+    // -----------------------------
+    // THEME TOGGLE (DARK/LIGHT)
+    // -----------------------------
+    function updateThemeButton() {
+      if (document.body.classList.contains("light-theme")) {
+        themeToggleBtn.textContent = "Modo escuro";
+      } else {
+        themeToggleBtn.textContent = "Modo claro";
+      }
+    }
+
+    themeToggleBtn.addEventListener("click", () => {
+      document.body.classList.toggle("light-theme");
+      updateThemeButton();
+    });
+
+    // -----------------------------
+    // CARREGA BANCO DE PALAVRAS (palavras.csv)
+    // -----------------------------
+    async function loadWords() {
+      try {
+        const response = await fetch("palavras.csv");
+        if (!response.ok) {
+          throw new Error("Erro ao carregar palavras.csv");
+        }
+        const text = await response.text();
+        wordList = text
+          .split(/\r?\n/)
+          .map((line) => line.trim())
+          .filter((line) => line.length > 0 && !line.startsWith("#"));
+
+        if (wordList.length === 0) {
+          throw new Error("Banco de palavras está vazio.");
+        }
+      } catch (err) {
+        console.error(err);
+        errorMsg.classList.remove("hidden");
+        errorMsg.textContent =
+          "Não foi possível carregar o arquivo de palavras (palavras.csv). Verifique se ele está no mesmo diretório do index.html.";
+        startBtn.disabled = true;
+      }
+    }
+
+    // Carrega as palavras ao abrir a página
+    window.addEventListener("DOMContentLoaded", () => {
+      loadWords();
+      updateThemeButton();
+    });
+
+    // -----------------------------
+    // INICIAR JOGO
+    // -----------------------------
+    startBtn.addEventListener("click", () => {
+      errorMsg.classList.add("hidden");
+      errorMsg.textContent = "";
+
+      // Lê os nomes (um por linha)
+      const raw = playerNamesTextarea.value
+        .split(/\r?\n/)
+        .map((name) => name.trim())
+        .filter((name) => name.length > 0);
+
+      if (raw.length < 3 || raw.length > 8) {
+        errorMsg.textContent =
+          "O jogo precisa de pelo menos 3 e no máximo 8 jogadores.";
+        errorMsg.classList.remove("hidden");
+        return;
+      }
+
+      if (wordList.length === 0) {
+        errorMsg.textContent =
+          "Banco de palavras ainda não está disponível. Tente recarregar a página.";
+        errorMsg.classList.remove("hidden");
+        return;
+      }
+
+      players = raw;
+      currentPlayerIndex = 0;
+      impostorIndex = Math.floor(Math.random() * players.length);
+      secretWord = wordList[Math.floor(Math.random() * wordList.length)];
+
+      // Muda para a tela do jogador
+      setupScreen.classList.add("hidden");
+      endScreen.classList.add("hidden");
+      playerScreen.classList.remove("hidden");
+
+      prepareCurrentPlayerView();
+    });
+
+    // -----------------------------
+    // PREPARA A TELA PARA O JOGADOR ATUAL
+    // -----------------------------
+    function prepareCurrentPlayerView() {
+      const playerName = players[currentPlayerIndex];
+
+      playerNameLabel.textContent = playerName + ",";
+      playerInstruction.textContent = "A PALAVRA SECRETA É...";
+      secretArea.classList.add("hidden");
+      secretText.textContent = "";
+      secretText.classList.remove("impostor", "impostor-strong", "secret");
+      openBtn.disabled = false;
+      openBtn.classList.remove("hidden");
+    }
+
+    // -----------------------------
+    // BOTÃO "ABRIR" (REVELA A PALAVRA OU IMPOSTOR)
+    // -----------------------------
+    openBtn.addEventListener("click", () => {
+      openBtn.disabled = true;
+
+      const isImpostor = currentPlayerIndex === impostorIndex;
+
+      if (isImpostor) {
+        secretText.textContent = "VOCÊ É O IMPOSTOR";
+        secretText.classList.add("impostor", "impostor-strong");
+      } else {
+        secretText.textContent = "A palavra secreta é: " + secretWord;
+        secretText.classList.add("secret");
+      }
+
+      secretArea.classList.remove("hidden");
+      openBtn.classList.add("hidden");
+    });
+
+    // -----------------------------
+    // BOTÃO "PRÓXIMO JOGADOR"
+    // -----------------------------
+    nextBtn.addEventListener("click", () => {
+      currentPlayerIndex++;
+
+      if (currentPlayerIndex < players.length) {
+        // Próximo jogador
+        prepareCurrentPlayerView();
+      } else {
+        // Todos já viram suas informações -> tela final
+        showEndScreen();
+      }
+    });
+
+    function showEndScreen() {
+      playerScreen.classList.add("hidden");
+      endScreen.classList.remove("hidden");
+    }
+
+    // -----------------------------
+    // VOLTA PARA A TELA INICIAL
+    // -----------------------------
+    function resetToStart() {
+      players = [];
+      currentPlayerIndex = 0;
+      impostorIndex = null;
+      secretWord = null;
+
+      playerScreen.classList.add("hidden");
+      endScreen.classList.add("hidden");
+      setupScreen.classList.remove("hidden");
+      // Se quiser limpar os nomes automaticamente, descomente abaixo
+      // playerNamesTextarea.value = "";
+    }
+
+    backToStartBtn.addEventListener("click", resetToStart);
+  </script>
+</body>
+</html>
